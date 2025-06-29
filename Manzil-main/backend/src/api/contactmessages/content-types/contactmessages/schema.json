@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contactmessage",
+  "info": {
+    "singularName": "contactmessages",
+    "pluralName": "contactmessage",
+    "displayName": "contactmessages",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

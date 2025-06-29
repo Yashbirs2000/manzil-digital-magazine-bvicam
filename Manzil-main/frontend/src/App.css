@@ -1,0 +1,80 @@
+/* Global Reset and Layout */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Root container */
+#root {
+  width: 100%;
+  max-width: 95vw;
+  padding: 0;
+  text-align: center;
+}
+
+/* Improve scaling on larger screens */
+@media (min-width: 80%) {
+  #root {
+    max-width: 80vw;
+    padding: 3vw;
+  }
+}
+
+/* Main layout adjustments */
+.main-content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* ----------------------------------------
+  Logo Styling (Fully Responsive)
+---------------------------------------- */
+
+.logo {
+  height: auto;
+  max-height: clamp(6vh, 10vw, 12vh); /* Scales across viewports */
+  padding: clamp(1vw, 2vw, 3vw);
+  transition: filter 300ms ease-in-out;
+}
+
+/* Hover Effects */
+.logo:hover {
+  filter: drop-shadow(0 0 1.5rem #ff6464aa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 1.5rem #f80000);
+}
+
+/* Tablet Optimization */
+@media (min-width: 768px) {
+  .logo {
+    max-height: clamp(5vh, 8vw, 10vh);
+    padding: clamp(1vw, 1.5vw, 2vw);
+  }
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+  .logo {
+    max-height: 8vh;
+    padding: 1vw;
+  }
+}

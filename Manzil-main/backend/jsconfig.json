@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",           // Allows absolute imports from 'src/'
+    "target": "ESNext",         // Supports latest JavaScript features
+    "module": "ESNext",         // Uses modern ES module syntax
+    "jsx": "react-jsx",         // Enables JSX for React
+    "strict": true              // Enforces best TypeScript/JS practices
+  }
+}

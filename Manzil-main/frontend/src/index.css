@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root Styling */
+:root {
+  font-family: 'Inter', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+}
+
+/* Links */
+a {
+  @apply font-medium text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600;
+}
+
+/* Body */
+body {
+  @apply flex items-center justify-center min-h-screen text-gray-900 bg-gray-100 dark:bg-gray-900 dark:text-gray-200;
+  margin-left: auto;  /* Centers content with equal left and right margins */
+  margin-right: auto; /* Centers content with equal left and right margins */
+  width: 100%;         
+}
+
+
+/* Headings */
+h1 {
+  @apply text-4xl font-bold leading-tight md:text-2xl;
+}
+
+/* Buttons */
+button {
+  @apply px-4 py-2 text-lg font-medium transition-colors bg-gray-800 border border-transparent rounded-lg hover:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-gray-700 dark:hover:border-blue-400 dark:focus:ring-blue-500;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  :root {
+    @apply text-gray-900 dark:text-gray-900;
+  }
+}

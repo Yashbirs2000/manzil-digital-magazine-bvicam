@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "magazines",
+  "info": {
+    "singularName": "magazine",
+    "pluralName": "magazines",
+    "displayName": "magazine",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "CoverImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "videos",
+        "audios",
+        "files"
+      ]
+    },
+    "Ebook": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "magazines"
+    },
+    "bookmarks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::bookmark.bookmark",
+      "mappedBy": "magazine"
+    }
+  }
+}
