@@ -32,7 +32,7 @@ const Current = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categoryRes = await axios.get('http://localhost:1337/api/categories');
+        const categoryRes = await axios.get(`${process.env.VITE_API_URL}/api/categories`);
         setCategories(categoryRes.data.data);
 
         const magazineData = await fetchMagazines();
@@ -40,11 +40,14 @@ const Current = () => {
         setMagazines(magazineData);
 
         if (user && token) {
-          const bookmarkRes = await axios.get(`http://localhost:1337/api/bookmarks?populate=magazine&filters[user][id][$eq]=${user.id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const bookmarkRes = await axios.get(
+            `${process.env.VITE_API_URL}/api/bookmarks?populate=magazine&filters[user][id][$eq]=${user.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
           const bookmarkedIds = bookmarkRes.data.data.map((b) => b.attributes.magazine.data.id);
           setUserBookmarks(bookmarkedIds);
         }
@@ -116,28 +119,34 @@ const Current = () => {
 
     try {
       if (userBookmarks.includes(magId)) {
-        // Remove bookmark (you must have unique constraint or get bookmark ID first)
-        const res = await axios.get(`http://localhost:1337/api/bookmarks?filters[user][id][$eq]=${user.id}&filters[magazine][id][$eq]=${magId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${process.env.VITE_API_URL}/api/bookmarks?filters[user][id][$eq]=${user.id}&filters[magazine][id][$eq]=${magId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         const bookmarkId = res.data.data[0]?.id;
         if (bookmarkId) {
-          await axios.delete(`http://localhost:1337/api/bookmarks/${bookmarkId}`, {
+          await axios.delete(`${process.env.VITE_API_URL}/api/bookmarks/${bookmarkId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUserBookmarks(userBookmarks.filter((id) => id !== magId));
         }
       } else {
         // Add bookmark
-        await axios.post('http://localhost:1337/api/bookmarks', {
-          data: {
-            user: user.id,
-            magazine: magId,
+        await axios.post(
+          `${process.env.VITE_API_URL}/api/bookmarks`,
+          {
+            data: {
+              user: user.id,
+              magazine: magId,
+            },
           },
-        }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setUserBookmarks([...userBookmarks, magId]);
       }
     } catch (err) {
