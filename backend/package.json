@@ -7,8 +7,7 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi",
-    "heroku-postbuild": "npm run build"
+    "strapi": "strapi"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "4.16",
