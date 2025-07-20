@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { fetchArticles, fetchMagazines } from "./api"; // Make sure both functions are exported from api.js
+import { fetchArticles, fetchMagazines } from "./api"; 
 import axios from "axios";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -67,7 +67,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categoryRes = await axios.get('http://localhost:1337/api/categories');
+        const categoryRes = await axios.get(`${process.env.VITE_API_URL}/api/categories`);
         setCategories(categoryRes.data.data);
 
         const magazineData = await fetchMagazines();
@@ -144,7 +144,6 @@ const Home = () => {
   return (
     <div className="flex flex-col p-8 space-y-8">
       <div className="flex flex-col w-full space-y-8 lg:flex-row lg:space-x-8 lg:space-y-0">
-
         {/* Webinar Section */}
         <div className="flex flex-col items-center w-full lg:w-1/4">
           <h2 className="mb-2 text-2xl font-bold text-gray-800">Upcoming Webinar</h2>
@@ -192,7 +191,6 @@ const Home = () => {
             </ul>
           </div>
         </aside>
-
       </div>
 
       {/* Category Buttons */}
@@ -220,22 +218,16 @@ const Home = () => {
         ))}
       </div>
 
-
-
-
-
-
       {/* Magazine Grid */}
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {filteredMagazines.slice(0, 6).map((mag) => (
-
           <div
             key={mag.id}
             onClick={() => handlePdfSelect(mag)}
             className="block p-4 transition-transform transform bg-white border rounded-lg shadow-md cursor-pointer hover:scale-105"
           >
             <img
-              src={mag.cover}
+              src={`${process.env.VITE_MEDIA_URL}${mag.cover}`}
               alt={mag.title}
               className="object-cover w-full mb-4 rounded-md h-60"
             />
@@ -249,62 +241,41 @@ const Home = () => {
         ))}
       </div>
 
-
-
-
-
-
-
-
-{/* Additional Articles Grid Section */}
-{articles.length > 0 && (
-  <div className="mt-20">
-    <h2 className="mb-6 text-4xl font-bold text-left text-black-900">Our Latest Articles</h2>
-    <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    {articles.slice(0, 8).map((article, index) => (
-
-        <div
-          key={index}
-          className="overflow-hidden transition transform bg-white shadow-lg rounded-2xl hover:scale-105 hover:shadow-xl"
-        >
-          <img
-            src={
-              article.image ||
-              "https://via.placeholder.com/600x400"
-            }
-            alt={article.title}
-            className="object-cover w-full h-48 rounded-t-2xl"
-          />
-          <div className="p-6">
-            <div className="flex justify-between mb-2 text-xs text-gray-400">
-              <span>{article.author || ""}</span>
-              
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-left text-gray-900">{article.title}</h3>
-            <p className="mb-4 text-sm text-justify text-gray-700">{article.description}</p>
-            <div className="flex justify-end">
-              
-            <button
-                    onClick={() => handleReadMore(article)}
-                    className="px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full hover:bg-blue-700"
-                  >
-                    Read More →
-                  </button>
-
-              
-            </div>
+      {/* Additional Articles Grid Section */}
+      {articles.length > 0 && (
+        <div className="mt-20">
+          <h2 className="mb-6 text-4xl font-bold text-left text-black-900">Our Latest Articles</h2>
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {articles.slice(0, 8).map((article, index) => (
+              <div
+                key={index}
+                className="overflow-hidden transition transform bg-white shadow-lg rounded-2xl hover:scale-105 hover:shadow-xl"
+              >
+                <img
+                  src={article.image || "https://via.placeholder.com/600x400"}
+                  alt={article.title}
+                  className="object-cover w-full h-48 rounded-t-2xl"
+                />
+                <div className="p-6">
+                  <div className="flex justify-between mb-2 text-xs text-gray-400">
+                    <span>{article.author || ""}</span>
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold text-left text-gray-900">{article.title}</h3>
+                  <p className="mb-4 text-sm text-justify text-gray-700">{article.description}</p>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => handleReadMore(article)}
+                      className="px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full hover:bg-blue-700"
+                    >
+                      Read More →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
-
-
-
-
-
-
+      )}
 
       {/* PDF FlipBook Modal */}
       {pdfUrl && (
@@ -316,8 +287,6 @@ const Home = () => {
             >
               &times;
             </button>
-
-            {/* Title and Metadata */}
             <div className="mb-1 text-center">
               <h2 className="text-2xl font-bold text-gray-800">{selectedTitle}</h2>
               <div className="mt-1 text-sm text-gray-500">
@@ -354,7 +323,6 @@ const Home = () => {
                     {Array.from({ length: Math.ceil(numPages / 2) }, (_, i) => {
                       const leftPage = i * 2 + 1;
                       const rightPage = i * 2 + 2;
-
                       return (
                         <div key={i} className="p-4">
                           <div className="flex">
@@ -402,7 +370,7 @@ const Events = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:1337/api/events?populate=Image&sort=createdAt:desc&pagination[limit]=1")
+      .get(`${process.env.VITE_API_URL}/api/events?populate=Image&sort=createdAt:desc&pagination[limit]=1`)
       .then((res) => {
         setEvent(res.data.data[0]);
       })
@@ -431,12 +399,11 @@ const Events = () => {
   return (
     <div className="w-full max-w-xs flip-card">
       <div className="flip-card-inner">
-
         {/* Front */}
         <div className="overflow-hidden bg-white shadow-lg flip-card-front rounded-xl">
           {imageUrl && (
             <img
-              src={`http://localhost:1337${imageUrl}`}
+              src={`${process.env.VITE_MEDIA_URL}${imageUrl}`}
               alt={Title}
               className="object-cover w-full h-48"
             />
@@ -484,7 +451,6 @@ const Events = () => {
             <p className="text-sm italic text-gray-500">No link available</p>
           )}
         </div>
-
       </div>
 
       {/* Flip Card CSS */}
