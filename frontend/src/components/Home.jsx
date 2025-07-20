@@ -67,7 +67,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categoryRes = await axios.get(`${process.env.VITE_API_URL}/api/categories`);
+        const categoryRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/categories`);
         setCategories(categoryRes.data.data);
 
         const magazineData = await fetchMagazines();
@@ -81,7 +81,6 @@ const Home = () => {
     };
 
     fetchData();
-    
     flipSound.current = new Audio('/sound.mp3');
   }, []);
 
@@ -227,7 +226,7 @@ const Home = () => {
             className="block p-4 transition-transform transform bg-white border rounded-lg shadow-md cursor-pointer hover:scale-105"
           >
             <img
-              src={`${process.env.VITE_MEDIA_URL}${mag.cover}`}
+              src={`${import.meta.env.VITE_MEDIA_URL}${mag.cover}`}
               alt={mag.title}
               className="object-cover w-full mb-4 rounded-md h-60"
             />
@@ -247,130 +246,93 @@ const Home = () => {
           <h2 className="mb-6 text-4xl font-bold text-left text-black-900">Our Latest Articles</h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {articles.slice(0, 8).map((article, index) => (
-              <div
+              <article
                 key={index}
-                className="overflow-hidden transition transform bg-white shadow-lg rounded-2xl hover:scale-105 hover:shadow-xl"
+                className="relative p-4 overflow-hidden transition duration-300 border rounded-md shadow-lg cursor-pointer group hover:scale-105"
+                onClick={() => handleReadMore(article)}
               >
-                <img
-                  src={article.image || "https://via.placeholder.com/600x400"}
-                  alt={article.title}
-                  className="object-cover w-full h-48 rounded-t-2xl"
-                />
-                <div className="p-6">
-                  <div className="flex justify-between mb-2 text-xs text-gray-400">
-                    <span>{article.author || ""}</span>
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold text-left text-gray-900">{article.title}</h3>
-                  <p className="mb-4 text-sm text-justify text-gray-700">{article.description}</p>
-                  <div className="flex justify-end">
-                    <button
-                      onClick={() => handleReadMore(article)}
-                      className="px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full hover:bg-blue-700"
-                    >
-                      Read More →
-                    </button>
-                  </div>
-                </div>
-              </div>
+                <h3 className="text-xl font-semibold">{article.title}</h3>
+                <p className="line-clamp-4">{article.body}</p>
+                <button
+                  className="absolute px-3 py-1 font-semibold text-white transition rounded bottom-3 right-3 bg-primary-900 hover:bg-primary-800"
+                  onClick={() => handleReadMore(article)}
+                >
+                  Read more
+                </button>
+              </article>
             ))}
           </div>
         </div>
       )}
 
-      {/* PDF FlipBook Modal */}
+      {/* PDF Viewer Modal */}
       {pdfUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-          <div className="relative bg-white p-8 rounded-xl max-w-[100%] max-h-[100%] overflow-auto">
-            <button
-              onClick={closeViewer}
-              className="absolute text-2xl font-bold text-red-600 top-2 right-2 hover:text-red-700"
-            >
-              &times;
-            </button>
-            <div className="mb-1 text-center">
-              <h2 className="text-2xl font-bold text-gray-800">{selectedTitle}</h2>
-              <div className="mt-1 text-sm text-gray-500">
-                {selectedCategoryName && <span>{selectedCategoryName}</span>}
-                {selectedPublishedDate && (
-                  <span> • {new Date(selectedPublishedDate).toLocaleDateString()}</span>
-                )}
+        <>
+          <button
+            onClick={closeViewer}
+            className="fixed top-0 left-0 z-50 p-4 text-white bg-black bg-opacity-75"
+          >
+            Close
+          </button>
+          <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black bg-opacity-90">
+            <div className="relative w-full max-w-[900px] max-h-[600px]">
+              <h2 className="mb-4 text-2xl font-bold text-white">{selectedTitle}</h2>
+              <p className="mb-2 text-white">Category: {selectedCategoryName}</p>
+              <p className="mb-4 text-white">Published: {new Date(selectedPublishedDate).toLocaleDateString()}</p>
+              <HTMLFlipBook
+                width={600}
+                height={800}
+                size="stretch"
+                minWidth={315}
+                maxWidth={1000}
+                minHeight={400}
+                maxHeight={1536}
+                maxShadowOpacity={0.5}
+                showCover={false}
+                mobileScrollSupport={true}
+                onFlip={onFlip}
+                ref={flipBookRef}
+              >
+                {Array.from({ length: numPages }, (_, index) => (
+                  <div key={index} className="h-full bg-white">
+                    <Document
+                      file={pdfUrl}
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      loading={<div>Loading PDF...</div>}
+                    >
+                      {renderPage(index + 1)}
+                    </Document>
+                  </div>
+                ))}
+              </HTMLFlipBook>
+              <div className="flex justify-center gap-8 mt-4">
+                <button
+                  onClick={goToPreviousPage}
+                  className="px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={goToNextPage}
+                  className="px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                >
+                  Next
+                </button>
               </div>
             </div>
-
-            <div className="relative flex items-center justify-center">
-              <button
-                onClick={goToPreviousPage}
-                className="absolute left-0 z-10 p-2 text-3xl text-blue-600 transform -translate-y-1/2 top-1/2 hover:text-blue-800"
-              >
-                &#8592;
-              </button>
-
-              <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
-                {numPages && (
-                  <HTMLFlipBook
-                    ref={flipBookRef}
-                    width={1400}
-                    height={900}
-                    showCover={true}
-                    className="mx-auto shadow-xl"
-                    mobileScrollSupport={true}
-                    flipDirection="horizontal"
-                    minWidth={900}
-                    maxWidth={1600}
-                    onFlip={onFlip}
-                    style={{ padding: '0 10px' }}
-                  >
-                    {Array.from({ length: Math.ceil(numPages / 2) }, (_, i) => {
-                      const leftPage = i * 2 + 1;
-                      const rightPage = i * 2 + 2;
-                      return (
-                        <div key={i} className="p-4">
-                          <div className="flex">
-                            <div className="w-1/2">
-                              {leftPage <= numPages && renderPage(leftPage)}
-                            </div>
-                            <div className="w-1/2">
-                              {rightPage <= numPages && renderPage(rightPage)}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </HTMLFlipBook>
-                )}
-              </Document>
-
-              <button
-                onClick={goToNextPage}
-                className="absolute right-0 z-10 p-2 text-3xl text-blue-600 transform -translate-y-1/2 top-1/2 hover:text-blue-800"
-              >
-                &#8594;
-              </button>
-            </div>
           </div>
-        </div>
+        </>
       )}
-
-      {/* Hide scrollbar style */}
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 };
 
-const Events = () => {
+function Events() {
   const [event, setEvent] = useState(null);
 
   useEffect(() => {
     axios
-      .get(`${process.env.VITE_API_URL}/api/events?populate=Image&sort=createdAt:desc&pagination[limit]=1`)
+      .get(`${import.meta.env.VITE_API_URL}/api/events?populate=Image&sort=createdAt:desc&pagination[limit]=1`)
       .then((res) => {
         setEvent(res.data.data[0]);
       })
@@ -379,107 +341,25 @@ const Events = () => {
       });
   }, []);
 
-  const isValidUrl = (url) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  if (!event) return null;
 
-  if (!event) {
-    return <div>Loading...</div>;
-  }
-
-  const { attributes } = event;
-  const { Title, Date: eventDate, Description, Link, Image } = attributes;
-  const imageUrl = Image?.data?.attributes?.url;
+  const { Title, Description, Date, Image } = event.attributes;
+  const imageUrl = Image?.data?.attributes?.url || "";
 
   return (
-    <div className="w-full max-w-xs flip-card">
-      <div className="flip-card-inner">
-        {/* Front */}
-        <div className="overflow-hidden bg-white shadow-lg flip-card-front rounded-xl">
-          {imageUrl && (
-            <img
-              src={`${process.env.VITE_MEDIA_URL}${imageUrl}`}
-              alt={Title}
-              className="object-cover w-full h-48"
-            />
-          )}
-          <div className="p-4">
-            <h2 className="text-lg font-semibold text-gray-800">{Title || "Untitled Event"}</h2>
-          </div>
-        </div>
-
-        {/* Back */}
-        <div className="p-4 overflow-hidden bg-white shadow-lg flip-card-back rounded-xl">
-          <h2 className="mb-2 text-xl font-bold text-black">{Title}</h2>
-          <div className="mb-2 text-sm text-black">
-            {Array.isArray(Description) && Description.length > 0 ? (
-              Description.map((block, index) => (
-                <p key={index} className="mb-1">
-                  {block.children?.map((child, idx) => (
-                    <span key={idx}>{child.text}</span>
-                  ))}
-                </p>
-              ))
-            ) : (
-              <p className="italic">No description provided.</p>
-            )}
-          </div>
-          <p className="mb-2 text-sm text-black">
-            {eventDate
-              ? new Date(eventDate).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
-              : "Date not available"}
-          </p>
-          {Link && isValidUrl(Link) ? (
-            <a
-              href={Link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-            >
-              Join Event
-            </a>
-          ) : (
-            <p className="text-sm italic text-gray-500">No link available</p>
-          )}
-        </div>
+    <div className="relative w-full max-w-sm p-4 bg-white border rounded-lg shadow-md">
+      <div className="overflow-hidden rounded-md">
+        <img
+          src={`${import.meta.env.VITE_MEDIA_URL}${imageUrl}`}
+          alt={Title}
+          className="object-cover w-full h-48"
+        />
       </div>
-
-      {/* Flip Card CSS */}
-      <style>{`
-        .flip-card {
-          perspective: 1000px;
-        }
-        .flip-card-inner {
-          position: relative;
-          width: 100%;
-          height: 380px;
-          transition: transform 0.8s;
-          transform-style: preserve-3d;
-        }
-        .flip-card:hover .flip-card-inner {
-          transform: rotateY(180deg);
-        }
-        .flip-card-front, .flip-card-back {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          backface-visibility: hidden;
-        }
-        .flip-card-back {
-          transform: rotateY(180deg);
-        }
-      `}</style>
+      <h3 className="mt-4 text-xl font-semibold">{Title}</h3>
+      <p className="mt-2 text-gray-600">{Description}</p>
+      <p className="mt-2 font-semibold text-gray-800">Date: {new Date(Date).toLocaleDateString()}</p>
     </div>
   );
-};
+}
 
 export default Home;
