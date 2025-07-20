@@ -7,7 +7,7 @@ module.exports = [
     config: {
       origin: [
         'http://localhost:5173', // Vite local dev
-        'https://your-frontend-domain.com', // Replace with your deployed frontend domain
+        'https://manzil-digital-magazine-bvicam-j7hx-od4pe4sf4.vercel.app/', // Replace with your deployed frontend domain
       ],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       headers: '*',
